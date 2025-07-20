@@ -10,13 +10,13 @@ const UserData = [
     {
         name : "User2",
         email : "user2@gmail.com",
-        password : bcrypt.hashSync("123456",10),
+        password : bcrypt.hashSync("12345",10),
         isAdmin : false
     },
     {
         name : "User3",
         email : "user3@gmail.com",
-        password : bcrypt.hashSync("1234567",10),
+        password : bcrypt.hashSync("12345",10),
         isAdmin : false
     }
 ]

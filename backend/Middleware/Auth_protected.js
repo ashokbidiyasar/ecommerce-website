@@ -1,8 +1,9 @@
 import UserModel from "../Models/UserModel.js";
 import asyncHandler from "./asyncHandler.js";
 import jwt from "jsonwebtoken";
-import { configDotenv } from "dotenv";
-configDotenv();
+import dotenv from "dotenv";
+dotenv.config();
+
 
 const Auth_protected = asyncHandler(async (req, res, next) => {
   let token = req.cookies.jwt;

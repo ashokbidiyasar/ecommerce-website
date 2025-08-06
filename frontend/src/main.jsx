@@ -13,8 +13,13 @@ import LoginScreen from "./Screens/LoginScreen.jsx";
 import RegisterScreen from "./Screens/RegisterScreen.jsx";
 import ShippingScreen from "./Screens/ShippingScreen.jsx";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute.jsx";
+import AdminRoute from "./components/adminRoute/AdminRoute.jsx";
 import PaymentScreen from "./Screens/PaymentScreen.jsx"
-import PlaceOrderScreen from './Screens/PaymentScreen.jsx';
+import PlaceOrderScreen from './Screens/PlaceOrderScreen.jsx';
+import OrderScreen from "./Screens/OrderScreen.jsx";
+import Profile from './Screens/Profile.jsx'
+import OrderlistScreen from './Screens/admin/OrderlistScreen.jsx'
+
 
 const router = createBrowserRouter([
   {
@@ -47,7 +52,16 @@ const router = createBrowserRouter([
           { path: "/shipping", element: <ShippingScreen /> },
           // Add more protected routes here
           { path: "/payment", element: <PaymentScreen /> },
-          {path : '/placeorder',element: <PaymentScreen />},
+          { path: "/placeorder", element: <PlaceOrderScreen /> },
+          { path: "/orders/:id", element: <OrderScreen /> },
+          { path: "/profile", element: <Profile /> },
+        ],
+      },
+      {
+        element: <AdminRoute />, //  Wraps the protected routes
+        children: [
+          { path: "/admin/orderlist", element: <OrderlistScreen /> },
+          
         ],
       },
     ],

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button,Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer/FormConatiner";
 import CheckoutSteps from "../components/CheckOutSteps";
 import { savePaymentMethod } from "../Store/features/cartSlice";
@@ -10,7 +10,7 @@ const PaymentScreen = () => {
   const navigate = useNavigate();
   const { UserInfo } = useSelector((state) => state.auth);
   const { PaymentMethod, shippingAddress } = useSelector((state) => state.cart);
-  const [paymentMethod, setPaymentMethod] = useState(PaymentMethod || "PayPal");
+  const [paymentMethod, setPaymentMethod] = useState(PaymentMethod || "Stripe");
 
   useEffect(() => {
     if (!shippingAddress) {
@@ -35,10 +35,10 @@ const PaymentScreen = () => {
             <Form.Check
               className="my-2"
               type="radio"
-              label="PayPal or Credit Card"
-              id="PayPal"
+              label="Stripe or Credit Card"
+              id="Stripe"
               name="paymentMethod"
-              value="PayPal"
+              value="Stripe"
               checked
               onChange={(e) => setPaymentMethod(e.target.value)}
             ></Form.Check>

@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { configDotenv } from "dotenv";
 import UserData from "./Userdata.js";
 import products_data from "./products.js";
 import UserModel from "./Models/UserModel.js";
@@ -7,7 +6,9 @@ import ProductModel from "./Models/ProductModel.js";
 import OrderModel from "./Models/OrderModel.js";
 import ConnectDB from "./ConnectDB/ConnectDB.js";
 
-configDotenv();
+import dotenv from "dotenv";
+dotenv.config();
+
 
 ConnectDB();
 

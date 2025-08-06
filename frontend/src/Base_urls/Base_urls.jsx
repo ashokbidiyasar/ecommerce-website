@@ -4,6 +4,6 @@ const Base_URL = "/api";
 const Product_URL = "products";
 const Order_URL = "orders";
 const User_URL = "users";
-const PayPal_URL = "config/paypal";
+const Stripe_URL = "payment";
 
-export { Base_URL, Product_URL, Order_URL, User_URL, PayPal_URL };
+export { Base_URL, Product_URL, Order_URL, User_URL, Stripe_URL };

@@ -2,14 +2,17 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { EmptyCart } from "../Store/features/cartSlice";
+import { ListGroup,Row,Col,Card,ListGroupItem,Button,Image } from "react-bootstrap";
 import { useCreateOrderMutation } from "../Store/features/order_slice";
-import { toast } from "react-toastifiy";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import CheckOutSteps from "../components/CheckOutSteps";
 
 const PlaceOrderScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
+  console.log(cart);
   useEffect(() => {
     if (!cart.shippingAddress) {
       navigate("/shipping");
@@ -19,25 +22,27 @@ const PlaceOrderScreen = () => {
     }
   }, [cart.shippingAddress, cart.PaymentMethod, navigate]);
 
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+  const [CreateOrder, { isLoading, error }] = useCreateOrderMutation();
 
-  const placeOrderHandler = async () => {
-    try {
-      const res = await createOrder({
-        orderItems: cart.cartItems,
-        shippingAddress: cart.shippingAddress,
-        paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        shippingPrice: cart.shippingPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
-      }).unwrap();
-      dispatch(EmptyCart());
-      navigate(`/order/${res._id}`);
-    } catch (err) {
-      toast.error(err);
-    }
-  };
+ const placeOrderHandler = async () => {
+   try {
+     const res = await CreateOrder({
+       orderItems: cart.cartItems,
+       shippingAddress: cart.shippingAddress,
+       paymentMethod: cart.PaymentMethod,
+       itemsPrice: cart.itemsPrice,
+       shippingPrice: cart.shippingPrice,
+       taxPrice: cart.taxPrice,
+       totalPrice: cart.totalPrice,
+     }).unwrap();
+
+     dispatch(EmptyCart());
+     navigate(`/orders/${res._id}`);
+   } catch (err) {
+     toast.error(err?.data?.message || "Failed to place order");
+   }
+ };
+
 
   return (
     <>
@@ -63,7 +68,7 @@ const PlaceOrderScreen = () => {
             <ListGroup.Item>
               <h2>Order Items</h2>
               {cart.cartItems.length === 0 ? (
-                <Message>Your cart is empty</Message>
+                <div>Your cart is empty</div>
               ) : (
                 <ListGroup variant="flush">
                   {cart.cartItems.map((item, index) => (
@@ -116,7 +121,7 @@ const PlaceOrderScreen = () => {
                   <Col>${cart.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              <ListGroup.Item>{error && <Message variant="danger">{error.data.message}</Message>}</ListGroup.Item>
+              <ListGroup.Item>{error && <div >{error.data.message}</div>}</ListGroup.Item>
               <ListGroup.Item>
                 <Button type="button" className="btn-block" disabled={cart.cartItems === 0} onClick={placeOrderHandler}>
                   Place Order

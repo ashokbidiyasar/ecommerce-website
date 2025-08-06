@@ -14,7 +14,7 @@ const authUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       userId: user._id,
       email: user.email,
-      Admin: user.isAdmin,
+      isAdmin: user.isAdmin,
     });
   } else {
     res.status(401);
@@ -53,13 +53,14 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  req.cookie("jwt", "", {
+  res.cookie("jwt", "", {
     httpOnly: true,
-    expires: new Date.now(0),
+    expires: new Date(0), // ← this is correct
   });
 
-  res.status(200).json({ message: "logout Successfully" });
+  res.status(200).json({ message: "Logged out successfully" });
 });
+
 
 const getUserProfile = asyncHandler(async (req, res) => {
   res.send("getUserProfile in  user");

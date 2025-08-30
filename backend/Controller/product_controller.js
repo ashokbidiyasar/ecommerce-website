@@ -1,19 +1,137 @@
-import asyncHandler from "../Middleware/asyncHandler.js"
+import asyncHandler from "../Middleware/asyncHandler.js";
 import ProductModel from "../Models/ProductModel.js";
 
-const GetAllProduct = asyncHandler(async(req,res)=>{
-    const products = await ProductModel.find({});
-    return res.json(products);
-})
+
+const GetAllProduct = asyncHandler(async (req, res) => {
+  const pageSize = process.env.PAGINATION_LIMIT;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const keyword = req.query.keyword
+    ? {
+        name: {
+          $regex: req.query.keyword,
+          $options: "i",
+        },
+      }
+    : {};
+
+  const count = await ProductModel.countDocuments({ ...keyword });
+  const products = await ProductModel.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  res.json({ products, page, pages: Math.ceil(count / pageSize) });
+});
 
 
-const GetOneProduct = asyncHandler (async(req, res) => {
+const GetOneProduct = asyncHandler(async (req, res) => {
   const product = await ProductModel.findById(req.params.id);
-  if(product){
-     return res.json(product);
-  }else{
-  res.status(404).json({error : "Product not found"});
+  if (product) {
+    return res.json(product);
+  } else {
+    res.status(404).json({ error: "Product not found" });
   }
-})
+});
 
-export { GetAllProduct, GetOneProduct };
+const CreateProduct = asyncHandler(async (req, res) => {
+  const product = await ProductModel.create({
+    name: "Sample name",
+    price: 0,
+    user: req.user._id,
+    image: "/images/sample.jpg",
+    brand: "Sample brand",
+    category: "Sample category",
+    countInStock: 0,
+    numReviews: 0,
+    description: "Sample description",
+  });
+
+  res.status(201).json(product);
+});
+
+const UpdateProduct = asyncHandler(async (req, res) => {
+  const { name, price, description, image, brand, category, countInStock } =
+    req.body;
+
+  const product = await ProductModel.findById(req.params.id);
+
+  if (product) {
+    product.name = name;
+    product.price = price;
+    product.description = description;
+    product.image = image;
+    product.brand = brand;
+    product.category = category;
+    product.countInStock = countInStock;
+
+    const updatedProduct = await product.save();
+    res.json(updatedProduct);
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
+const DeleteProduct = asyncHandler(async (req, res) => {
+  const product = await ProductModel.findById(req.params.id);
+
+  if (product) {
+    await ProductModel.deleteOne({ _id: product._id });
+    res.json({ message: "Product removed" });
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
+const createProductReview = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
+
+  const product = await ProductModel.findById(req.params.id);
+
+  if (product) {
+    const alreadyReviewed = product.reviews.find((r) => r.user.toString() === req.user._id.toString());
+
+    if (alreadyReviewed) {
+      res.status(400);
+      throw new Error("Product already reviewed");
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    };
+
+    product.reviews.push(review);
+
+    product.numReviews = product.reviews.length;
+
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    await product.save();
+    res.status(201).json({ message: "Review added" });
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
+const getTopProducts = asyncHandler(async (req, res) => {
+  const products = await ProductModel.find({}).sort({ rating: -1 }).limit(3);
+  
+  res.json(products);
+});
+
+export {
+  getTopProducts,
+  GetAllProduct,
+  GetOneProduct,
+  CreateProduct,
+  UpdateProduct,
+  DeleteProduct,
+  createProductReview
+};

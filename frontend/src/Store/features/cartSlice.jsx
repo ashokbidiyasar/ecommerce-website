@@ -36,7 +36,7 @@ const cartSlice = createSlice({
       UpdataCart(state);
     },
 
-    EmptyCart : (state,action)=>{
+    EmptyCart : (state)=>{
       state.cartItems = [];
       UpdataCart(state);
     }

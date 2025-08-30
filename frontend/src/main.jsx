@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./components/Home/Home.jsx";
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
 import ProductScreen from "./Screens/ProductScreen.jsx";
 import CartScreen from "./Screens/CartScreen.jsx";
 import LoginScreen from "./Screens/LoginScreen.jsx";
@@ -19,8 +20,11 @@ import PlaceOrderScreen from './Screens/PlaceOrderScreen.jsx';
 import OrderScreen from "./Screens/OrderScreen.jsx";
 import Profile from './Screens/Profile.jsx'
 import OrderlistScreen from './Screens/admin/OrderlistScreen.jsx'
-
-
+import ProductListScreen from "./Screens/admin/ProductListScreen.jsx";
+import ProductEditScreen from "./Screens/admin/ProductEditScreen.jsx";
+import UserListScreen from "./Screens/admin/UserListScreen.jsx";
+import UserEditScreen from "./Screens/admin/UserEditScreen.jsx";
+import HomeScreen from "./Screens/HomeScreen.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -28,7 +32,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: <HomeScreen />,
       },
       {
         path: "/product/:id",
@@ -47,6 +51,18 @@ const router = createBrowserRouter([
         element: <RegisterScreen />,
       },
       {
+        path: "/search/:keyword",
+        element: <HomeScreen />,
+      },
+      {
+        path: "/page/:pageNumber",
+        element: <HomeScreen />,
+      },
+      {
+        path: "/search/:keyword/page/:pageNumber",
+        element: <HomeScreen />,
+      },
+      {
         element: <PrivateRoute />, //  Wraps the protected routes
         children: [
           { path: "/shipping", element: <ShippingScreen /> },
@@ -61,17 +77,23 @@ const router = createBrowserRouter([
         element: <AdminRoute />, //  Wraps the protected routes
         children: [
           { path: "/admin/orderlist", element: <OrderlistScreen /> },
-          
+          { path: "/admin/productlist", element: <ProductListScreen /> },
+          { path: "/admin/product/:id/edit", element: <ProductEditScreen /> },
+          { path: "/admin/userlist", element: <UserListScreen /> },
+          { path: "/admin/user/:id/edit", element: <UserEditScreen /> },
         ],
       },
     ],
   },
 ]);
 
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </HelmetProvider>
   </StrictMode>
 );

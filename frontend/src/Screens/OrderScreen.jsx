@@ -16,10 +16,13 @@ const OrderScreen = () => {
 
   const { UserInfo } = useSelector((state) => state.auth);
 
-  const { data: order, isLoading, error, refetch } = useGetOrderDetailQuery(orderId);
-  const [payOrder, { isLoading: loadingPay, error: payError }] = usePayOrderMutation();
-  const [createStripeSession, { isLoading: isPaying }] = useCreateStripeSessionMutation();
-  const [deliverOrder, { isLoading: loadingDeliver }] = useDeliverOrderMutation();
+  const { data: order, isLoading, error } = useGetOrderDetailQuery(orderId);
+  const [payOrder, { isLoading: loadingPay, error: payError }] =
+    usePayOrderMutation();
+  const [createStripeSession, { isLoading: isPaying }] =
+    useCreateStripeSessionMutation();
+  const [deliverOrder, { isLoading: loadingDeliver }] =
+    useDeliverOrderMutation();
 
   const query = new URLSearchParams(location.search);
   const isSuccess = query.get("success") === "true";
@@ -29,8 +32,15 @@ const OrderScreen = () => {
     const handleStripeSuccess = async () => {
       if (isSuccess && order && !order.isPaid) {
         try {
-          await payOrder(orderId).unwrap();
-          refetch();
+          await payOrder({
+            orderId,
+            details: {
+              id: "stripe-payment-id",
+              status: "COMPLETED",
+              update_time: new Date().toISOString(),
+              email_address: order.user.email,
+            },
+          }).unwrap();
         } catch (err) {
           console.error("Failed to mark order as paid:", err);
         } finally {
@@ -46,7 +56,15 @@ const OrderScreen = () => {
     if ((isSuccess || isCanceled) && order) {
       handleStripeSuccess();
     }
-  }, [location.search, order, orderId, payOrder, refetch, isSuccess, isCanceled, navigate]);
+  }, [
+    location.search,
+    order,
+    orderId,
+    payOrder,
+    isSuccess,
+    isCanceled,
+    navigate,
+  ]);
 
   const handlePayment = async () => {
     try {
@@ -65,7 +83,6 @@ const OrderScreen = () => {
 
   const deliverHandler = async () => {
     await deliverOrder(orderId);
-    refetch();
   };
 
   return (
@@ -77,8 +94,12 @@ const OrderScreen = () => {
         <p style={{ color: "red" }}>{error?.data?.message || error.error}</p>
       ) : (
         <>
-          {isSuccess && <p style={{ color: "green" }}>✅ Payment successful!</p>}
-          {isCanceled && <p style={{ color: "red" }}>❌ Payment was canceled.</p>}
+          {isSuccess && (
+            <p style={{ color: "green" }}>✅ Payment successful!</p>
+          )}
+          {isCanceled && (
+            <p style={{ color: "red" }}>❌ Payment was canceled.</p>
+          )}
 
           <Row>
             <Col md={8}>
@@ -92,9 +113,10 @@ const OrderScreen = () => {
                     <strong>Email:</strong> {order.user.email}
                   </p>
                   <p>
-                    <strong>Address:</strong>{" "}
-                    {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
-                    {order.shippingAddress.postalCode}, {order.shippingAddress.country}
+                    <strong>Address:</strong> {order.shippingAddress.address},{" "}
+                    {order.shippingAddress.city},{" "}
+                    {order.shippingAddress.postalCode},{" "}
+                    {order.shippingAddress.country}
                   </p>
                 </ListGroup.Item>
 
@@ -113,11 +135,17 @@ const OrderScreen = () => {
                         <ListGroup.Item key={index}>
                           <Row>
                             <Col md={1}>
-                              <Image src={item.image} alt={item.name} fluid rounded />
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                fluid
+                                rounded
+                              />
                             </Col>
                             <Col>{item.name}</Col>
                             <Col>
-                              {item.qty} x ${item.price} = ${item.qty * item.price}
+                              {item.qty} x ${item.price} = $
+                              {item.qty * item.price}
                             </Col>
                           </Row>
                         </ListGroup.Item>
@@ -155,7 +183,11 @@ const OrderScreen = () => {
 
                   <ListGroup.Item>
                     {loadingPay && <p>Updating payment...</p>}
-                    {payError && <p style={{ color: "red" }}>{payError?.data?.message || payError.error}</p>}
+                    {payError && (
+                      <p style={{ color: "red" }}>
+                        {payError?.data?.message || payError.error}
+                      </p>
+                    )}
                     {!order.isPaid && (
                       <Button
                         type="button"
@@ -166,26 +198,34 @@ const OrderScreen = () => {
                         {isPaying ? "Processing..." : "Pay Now"}
                       </Button>
                     )}
-                    {order.isPaid && <p style={{ color: "green", fontWeight: "bold" }}>Order Paid ✅</p>}
+                    {order.isPaid && (
+                      <p style={{ color: "green", fontWeight: "bold" }}>
+                        Order Paid ✅
+                      </p>
+                    )}
                   </ListGroup.Item>
 
-                  {/* Admin Deliver Button */}
-                  {UserInfo && UserInfo.isAdmin && order.isPaid && !order.isDelivered && (
-                    <ListGroup.Item>
-                      {loadingDeliver && <p>Marking as delivered...</p>}
-                      <Button
-                        type="button"
-                        className="btn-block btn-success"
-                        onClick={deliverHandler}
-                      >
-                        Mark as Delivered
-                      </Button>
-                    </ListGroup.Item>
-                  )}
+                  {UserInfo &&
+                    UserInfo.isAdmin &&
+                    order.isPaid &&
+                    !order.isDelivered && (
+                      <ListGroup.Item>
+                        {loadingDeliver && <p>Marking as delivered...</p>}
+                        <Button
+                          type="button"
+                          className="btn-block btn-success"
+                          onClick={deliverHandler}
+                        >
+                          Mark as Delivered
+                        </Button>
+                      </ListGroup.Item>
+                    )}
 
                   {order.isDelivered && (
                     <ListGroup.Item>
-                      <p style={{ color: "green", fontWeight: "bold" }}>Order Delivered ✅</p>
+                      <p style={{ color: "green", fontWeight: "bold" }}>
+                        Order Delivered ✅
+                      </p>
                     </ListGroup.Item>
                   )}
                 </ListGroup>

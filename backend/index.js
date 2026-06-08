@@ -5,7 +5,7 @@ import ConnectDB from "./ConnectDB/ConnectDB.js";
 import dotenv from "dotenv";
 import product_router from "./routes/product_routes.js";
 import user_router from "./routes/user_routes.js";
-import { errorHandler } from "./Middleware/errorHandler.js";
+import { notFound, errorHandler } from "./Middleware/errorHandler.js";
 import cookieParser from "cookie-parser";
 import order_router from "./routes/order_routes.js";
 import payment_router from "./routes/payment_routes.js";
@@ -56,7 +56,10 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Error handler middleware
+// 404 handler — catches requests to undefined routes
+app.use(notFound);
+
+// Global error handler
 app.use(errorHandler);
 
 // Start server

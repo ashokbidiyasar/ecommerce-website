@@ -1,5 +1,8 @@
+// #12 fix: toFixed(2) returns a string — wrap with parseFloat to ensure a proper Number is returned.
+// Without this, prices like itemsPrice, taxPrice etc. would be strings, causing silent coercion
+// bugs in arithmetic (e.g. Stripe's totalPrice * 100) and Mongoose Number field validation.
 function addDecimals(num) {
-  return (Math.round(num * 100) / 100).toFixed(2);
+  return parseFloat((Math.round(num * 100) / 100).toFixed(2));
 }
 
 export function calcPrices(orderItems) {

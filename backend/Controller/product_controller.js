@@ -3,7 +3,9 @@ import ProductModel from "../Models/ProductModel.js";
 
 
 const GetAllProduct = asyncHandler(async (req, res) => {
-  const pageSize = process.env.PAGINATION_LIMIT;
+  // #13 fix: process.env.PAGINATION_LIMIT is always a string (or undefined if not set in .env).
+  // Must parse to Number with a safe fallback to avoid NaN in Math.ceil() and broken skip/limit.
+  const pageSize = Number(process.env.PAGINATION_LIMIT) || 10;
   const page = Number(req.query.pageNumber) || 1;
 
   const keyword = req.query.keyword

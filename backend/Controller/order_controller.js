@@ -11,11 +11,7 @@ const getMyOrders = asyncHandler(async (req, res) => {
     "name email"
   );
 
-  if (!orders || orders.length === 0) {
-    res.status(404);
-    throw new Error("No orders found for this user");
-  }
-
+  // An empty array is valid — new users simply have no orders yet
   res.status(200).json(orders);
 });
 
@@ -71,11 +67,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 const GetAllOrders = asyncHandler(async (req, res) => {
   const result = await OrderModel.find({}).populate("user", "name _id");
 
-  if (!result || result.length === 0) {
-    res.status(404);
-    throw new Error("No orders found");
-  }
-
+  // Return all orders; empty array is perfectly valid
   res.json(result);
 });
 

@@ -12,6 +12,13 @@ const Auth_protected = asyncHandler(async (req, res, next) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await UserModel.findOne({ _id: decoded.userId }).select("-password");
+
+      // #11 fix: user may have been deleted after token was issued
+      if (!req.user) {
+        res.status(401);
+        throw new Error("Not authorized, user no longer exists");
+      }
+
       next();
     } catch (error) {
       console.log(error);
@@ -27,11 +34,11 @@ const Auth_protected = asyncHandler(async (req, res, next) => {
 const Admin_protected = asyncHandler(async (req, res, next) => {
   const user = req.user;
 
-  if (user && user.isAdmin == true) {
+  if (user && user.isAdmin === true) {
     next();
   } else {
-    res.status(401);
-    throw new Error("Not authorized,Not admin");
+    res.status(403); // 403 = authenticated but not authorized (not 401)
+    throw new Error("Not authorized as admin");
   }
 });
 

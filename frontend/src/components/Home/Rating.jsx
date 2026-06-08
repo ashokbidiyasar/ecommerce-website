@@ -10,12 +10,12 @@ const Rating = ({ rating, reviews }) => {
   }
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="d-flex align-items-center gap-2">
       {/* Stars */}
-      <div className="flex">{stars}</div>
+      <div className="d-flex">{stars}</div>
 
       {/* Review count */}
-      <span className="text-sm font-medium text-gray-600">
+      <span className="small fw-medium text-secondary">
         {reviews} {reviews === 1 ? "review" : "reviews"}
       </span>
     </div>

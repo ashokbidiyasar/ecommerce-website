@@ -25,13 +25,13 @@ const authUser = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-  const exists = UserModel.findOne({ email });
+  const exists = await UserModel.findOne({ email });
   if (exists) {
     res.status(400);
     throw new Error("User already exists");
   }
 
-  const user = UserModel.create({
+  const user = await UserModel.create({
     name,
     email,
     password,
@@ -63,7 +63,19 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  res.send("getUserProfile in  user");
+  const user = await UserModel.findById(req.user._id);
+
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
 });
 
 const updateUserProfile = asyncHandler(async (req, res) => {

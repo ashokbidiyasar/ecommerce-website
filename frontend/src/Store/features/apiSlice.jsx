@@ -3,7 +3,7 @@ import { Base_URL } from "../../Base_urls/Base_urls";
 const apiSlice = createApi({
       reducerPath : "api",
       baseQuery : fetchBaseQuery({baseUrl:Base_URL}),
-      tagTypes : ['Product','Order','User'],
+      tagTypes : ['Product', 'Products', 'Order', 'User'],
       endpoints : ()=>({})
 });
 

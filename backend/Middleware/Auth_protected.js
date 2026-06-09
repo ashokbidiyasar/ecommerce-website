@@ -16,7 +16,7 @@ const Auth_protected = asyncHandler(async (req, res, next) => {
       // #11 fix: user may have been deleted after token was issued
       if (!req.user) {
         res.status(401);
-        throw new Error("Not authorized, user no longer exists");
+        throw new Error("Not authorized, token failed");
       }
 
       next();

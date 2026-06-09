@@ -1,7 +1,6 @@
-import UpdataCart from "../utils/cartUtils.js";
 import { Form, Row, Col, Image, ListGroup, Card ,Button} from "react-bootstrap";
 import { useDispatch,useSelector } from "react-redux";
-import { addToCart,RemoveFromCart } from "../Store/features/cartSlice.jsx";
+import { RemoveFromCart, updateCartQty } from "../Store/features/cartSlice.jsx";
 import { useNavigate,Link } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 
@@ -11,7 +10,8 @@ const CartScreen = () => {
     const navigate = useNavigate();
 
     const addToCartHandler = (product, qty) => {
-      dispatch(addToCart({ ...product, qty }));
+      // updateCartQty: sets qty directly (not accumulate)
+      dispatch(updateCartQty({ id: product._id, qty }));
     };
 
     const removeFromCartHandler = (id) => {

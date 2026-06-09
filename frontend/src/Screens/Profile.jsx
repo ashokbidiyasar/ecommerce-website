@@ -14,9 +14,9 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const UserInfo = useSelector((state) => state.auth);
-  const [name, setName] = useState(UserInfo?.user?.name || "");
-  const [email, setEmail] = useState(UserInfo?.email?.email || "");
+  const { UserInfo } = useSelector((state) => state.auth);
+  const [name, setName] = useState(UserInfo?.name || "");
+  const [email, setEmail] = useState(UserInfo?.email || "");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
 
@@ -24,10 +24,10 @@ const Profile = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery();
 
   useEffect(() => {
-    setName(UserInfo?.user?.name || "");
-    setEmail(UserInfo?.email?.email || "");
-    //THis is when profile is updated
-  }, [UserInfo, name, email]);
+    setName(UserInfo?.name || "");
+    setEmail(UserInfo?.email || "");
+    // Sync form fields when UserInfo changes (e.g. after profile update)
+  }, [UserInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

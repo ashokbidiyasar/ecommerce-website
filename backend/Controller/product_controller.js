@@ -31,7 +31,9 @@ const GetOneProduct = asyncHandler(async (req, res) => {
   if (product) {
     return res.json(product);
   } else {
-    res.status(404).json({ error: "Product not found" });
+    // Use throw + global errorHandler for consistent { message } response shape
+    res.status(404);
+    throw new Error("Product not found");
   }
 });
 
@@ -58,13 +60,14 @@ const UpdateProduct = asyncHandler(async (req, res) => {
   const product = await ProductModel.findById(req.params.id);
 
   if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.image = image;
-    product.brand = brand;
-    product.category = category;
-    product.countInStock = countInStock;
+    // Use ?? fallback so partial updates don't overwrite existing fields with undefined
+    product.name = name ?? product.name;
+    product.price = price ?? product.price;
+    product.description = description ?? product.description;
+    product.image = image ?? product.image;
+    product.brand = brand ?? product.brand;
+    product.category = category ?? product.category;
+    product.countInStock = countInStock ?? product.countInStock;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -88,6 +91,12 @@ const DeleteProduct = asyncHandler(async (req, res) => {
 
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
+
+  // Validate required fields before touching the DB
+  if (!rating || !comment) {
+    res.status(400);
+    throw new Error("Rating and comment are required");
+  }
 
   const product = await ProductModel.findById(req.params.id);
 

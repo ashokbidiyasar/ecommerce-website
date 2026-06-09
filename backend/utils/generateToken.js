@@ -8,7 +8,7 @@ const generateToken = async (res, userId) => {
     };
   const options = {
     algorithm: "HS256",
-    expiresIn: "30d",
+    expiresIn: "7d",
   };
   const token = jwt.sign(payload, process.env.JWT_SECRET, options);
 
@@ -16,7 +16,7 @@ const generateToken = async (res, userId) => {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development",
     sameSite: "strict",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
 

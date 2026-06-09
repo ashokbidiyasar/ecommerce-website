@@ -11,14 +11,13 @@ const user_slice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      providesTags: ["User"],
     }),
     logout: builder.mutation({
       query: () => ({
         url: `${User_URL}/logout`,
         method: "POST",
       }),
-      providesTags: ["User"],
+      invalidatesTags: ["User"],
     }),
     register: builder.mutation({
       query: (data) => ({
@@ -33,13 +32,12 @@ const user_slice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      providesTags: ["User"],
+      invalidatesTags: ["User"],
     }),
 
     getUsers: builder.query({
       query: () => ({
-        url: `${User_URL}/users`,
-        method: "GET",
+        url: User_URL,
       }),
       providesTags: ["User"],
     }),
@@ -48,7 +46,7 @@ const user_slice = apiSlice.injectEndpoints({
         url: `${User_URL}/${userId}`,
         method: "DELETE",
       }),
-      providesTags: ["User"],
+      invalidatesTags: ["User"],
     }),
     getUserDetails: builder.query({
       query: (id) => ({

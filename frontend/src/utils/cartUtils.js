@@ -8,11 +8,11 @@ const UpdataCart = (state) => {
     state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   );
 
-  // Shipping cost
-  state.shippingPrice = addNumber(state.itemsPrice > 500 ? 0 : 40);
+  // Shipping: free if itemsPrice > 100, else $10 — matches backend calcPrices.js
+  state.shippingPrice = addNumber(state.itemsPrice > 100 ? 0 : 10);
 
-  // Tax (18%)
-  state.taxPrice = addNumber(state.itemsPrice * 0.18);
+  // Tax: 15% — matches backend calcPrices.js
+  state.taxPrice = addNumber(state.itemsPrice * 0.15);
 
   // Total cost
   state.totalPrice = addNumber(

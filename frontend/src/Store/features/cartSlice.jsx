@@ -1,7 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import UpdataCart from "../../utils/cartUtils.js";
 // Ensure initialState is an object with cartItems
-const initialState = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : { cartItems: [],shippingAddress : {},PaymentMethod : "Stripe" };
+const initialState = localStorage.getItem("cart")
+  ? JSON.parse(localStorage.getItem("cart"))
+  : { cartItems: [], shippingAddress: {}, paymentMethod: "Stripe" };
 
 const cartSlice = createSlice({
   name: "cart",
@@ -12,7 +14,12 @@ const cartSlice = createSlice({
       const exists = state.cartItems.find((product) => product._id === Item._id);
 
       if (exists) {
-        state.cartItems = state.cartItems.map((product) => (product._id === Item._id ? Item : product));
+        // Merge qty: add new qty on top of existing qty, cap at available stock
+        state.cartItems = state.cartItems.map((product) =>
+          product._id === Item._id
+            ? { ...product, qty: Math.min(product.qty + Item.qty, Item.countInStock) }
+            : product
+        );
       } else {
         state.cartItems = [...state.cartItems, Item];
       }
@@ -36,6 +43,15 @@ const cartSlice = createSlice({
       UpdataCart(state);
     },
 
+    // Used by CartScreen dropdown: SET the qty directly (not accumulate)
+    updateCartQty: (state, action) => {
+      const { id, qty } = action.payload;
+      state.cartItems = state.cartItems.map((item) =>
+        item._id === id ? { ...item, qty } : item
+      );
+      UpdataCart(state);
+    },
+
     EmptyCart : (state)=>{
       state.cartItems = [];
       UpdataCart(state);
@@ -43,5 +59,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, RemoveFromCart,setShippingAddress,savePaymentMethod,EmptyCart } = cartSlice.actions;
+export const { addToCart, RemoveFromCart, updateCartQty, setShippingAddress, savePaymentMethod, EmptyCart } = cartSlice.actions;
 export default cartSlice.reducer;

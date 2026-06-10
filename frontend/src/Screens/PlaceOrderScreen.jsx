@@ -17,10 +17,10 @@ const PlaceOrderScreen = () => {
     if (!cart.shippingAddress) {
       navigate("/shipping");
     }
-    if (!cart.PaymentMethod) {
+    if (!cart.paymentMethod) {
       navigate("/payment");
     }
-  }, [cart.shippingAddress, cart.PaymentMethod, navigate]);
+  }, [cart.shippingAddress, cart.paymentMethod, navigate]);
 
   const [CreateOrder, { isLoading, error }] = useCreateOrderMutation();
 
@@ -29,7 +29,7 @@ const PlaceOrderScreen = () => {
      const res = await CreateOrder({
        orderItems: cart.cartItems,
        shippingAddress: cart.shippingAddress,
-       paymentMethod: cart.PaymentMethod,
+       paymentMethod: cart.paymentMethod,
        itemsPrice: cart.itemsPrice,
        shippingPrice: cart.shippingPrice,
        taxPrice: cart.taxPrice,
@@ -123,7 +123,7 @@ const PlaceOrderScreen = () => {
               </ListGroup.Item>
               <ListGroup.Item>{error && <div >{error.data.message}</div>}</ListGroup.Item>
               <ListGroup.Item>
-                <Button type="button" className="btn-block" disabled={cart.cartItems === 0} onClick={placeOrderHandler}>
+                <Button type="button" className="btn-block" disabled={cart.cartItems.length === 0} onClick={placeOrderHandler}>
                   Place Order
                 </Button>
                 {isLoading && <div>Loading...</div>}

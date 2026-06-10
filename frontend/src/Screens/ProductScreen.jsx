@@ -42,7 +42,7 @@ const ProductScreen = () => {
     error,
   } = useGetProductDetailQuery(productId);
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { UserInfo } = useSelector((state) => state.auth);
 
   const [createReview, { isLoading: loadingProductReview }] =
     useCreateReviewMutation();
@@ -174,7 +174,7 @@ const ProductScreen = () => {
 
                   {loadingProductReview && <Loader />}
 
-                  {userInfo ? (
+                  {UserInfo ? (
                     <Form onSubmit={submitHandler}>
                       <Form.Group className="my-2" controlId="rating">
                         <Form.Label>Rating</Form.Label>

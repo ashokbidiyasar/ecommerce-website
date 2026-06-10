@@ -10,7 +10,7 @@ const order_slice = apiSlice.injectEndpoints({
         method: "POST",
         body: { ...order },
       }),
-      providesTags: ["Order"],
+      invalidatesTags: ["Order"],
     }),
     GetOrderDetail: builder.query({
       query: (order) => ({
@@ -25,7 +25,7 @@ const order_slice = apiSlice.injectEndpoints({
         method: "PUT",
         body: details,
       }),
-      providesTags: ["Order"],
+      invalidatesTags: ["Order"],
     }),
     createStripeSession: builder.mutation({
       query: ({ orderId, orderItems, totalPrice }) => ({

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Loader from "../components/Loader.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import {useRegisterMutation} from "../Store/features/user_slice";
 import { setCredentials } from "../Store/features/authSlice";
@@ -30,7 +31,7 @@ const RegisterScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await register({ email, password }).unwrap();
+      const res = await register({name, email, password }).unwrap();
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (err) {

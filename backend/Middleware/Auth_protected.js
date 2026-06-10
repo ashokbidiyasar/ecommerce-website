@@ -9,25 +9,26 @@ const Auth_protected = asyncHandler(async (req, res, next) => {
   let token = req.cookies.jwt;
 
   if (token) {
+    let decoded;
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await UserModel.findOne({ _id: decoded.userId }).select("-password");
-
-      // #11 fix: user may have been deleted after token was issued
-      if (!req.user) {
-        res.status(401);
-        throw new Error("Not authorized, token failed");
-      }
-
-      next();
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
-      console.log(error);
+      // JWT is malformed, expired, or signature is invalid
       res.status(401);
-      throw new Error("not authorized,token failed");
+      throw new Error("Not authorized, token failed");
     }
+
+    // Check if the user still exists (may have been deleted after token was issued)
+    req.user = await UserModel.findOne({ _id: decoded.userId }).select("-password");
+    if (!req.user) {
+      res.status(401);
+      throw new Error("Not authorized, user no longer exists");
+    }
+
+    next();
   } else {
-    console.log("error in auth protected");
-    throw new Error("not authorized,not token");
+    res.status(401);
+    throw new Error("Not authorized, no token");
   }
 });
 

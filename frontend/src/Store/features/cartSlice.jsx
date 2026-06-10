@@ -39,7 +39,7 @@ const cartSlice = createSlice({
       UpdataCart(state);
     },
     savePaymentMethod: (state, action) => {
-      state.PaymentMethod = action.payload;
+      state.paymentMethod = action.payload;
       UpdataCart(state);
     },
 

@@ -16,7 +16,7 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { UserInfo } = useSelector((state) => state.auth);
-  console.log("UserInfo in RegisterScreen:", UserInfo);
+  
 
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";

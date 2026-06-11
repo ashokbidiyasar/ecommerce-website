@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "../Store/features/user_slice";
 import { setCredentials } from "../Store/features/authSlice";
@@ -18,10 +18,13 @@ const LoginScreen = () => {
   const redirect = searchParams.get("redirect") || "/";
   const [login, { isLoading }] = useLoginMutation();
 
+  
+
   useEffect(() => {
     if (UserInfo) {
       navigate(redirect);
     }
+    
   }, [redirect, navigate, UserInfo]);
 
   const submitHandler = async (e) => {

@@ -6,6 +6,7 @@ import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../Store/features/user_slice";
 import { logout as logoutStore } from "../../Store/features/authSlice";
+import { clearCheckoutData } from "../../Store/features/cartSlice";
 import { useNavigate } from "react-router-dom";
 import SearchBox from "../SearchBox";
 
@@ -19,7 +20,8 @@ const Header = () => {
   const logoutHandler = async () => {
     try {
       await logoutapi();
-      dispatch(logoutStore());
+      dispatch(logoutStore());          // clears UserInfo from Redux + localStorage
+      dispatch(clearCheckoutData());    // clears shippingAddress & paymentMethod, keeps cartItems
       navigate("/login");
     } catch (error) {
       console.log("error in logout in header", error);

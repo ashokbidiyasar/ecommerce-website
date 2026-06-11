@@ -55,9 +55,17 @@ const cartSlice = createSlice({
     EmptyCart : (state)=>{
       state.cartItems = [];
       UpdataCart(state);
-    }
+    },
+
+    // Clears shipping address and payment method on logout,
+    // but keeps cartItems so the user can continue shopping after logging back in.
+    clearCheckoutData: (state) => {
+      state.shippingAddress = {};
+      state.paymentMethod = "Stripe";
+      UpdataCart(state);
+    },
   },
 });
 
-export const { addToCart, RemoveFromCart, updateCartQty, setShippingAddress, savePaymentMethod, EmptyCart } = cartSlice.actions;
+export const { addToCart, RemoveFromCart, updateCartQty, setShippingAddress, savePaymentMethod, EmptyCart, clearCheckoutData } = cartSlice.actions;
 export default cartSlice.reducer;

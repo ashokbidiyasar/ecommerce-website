@@ -17,7 +17,7 @@ const ShippingScreen = () => {
   const [country, setCountry] = useState(shippingAddress?.country || "");
 
   useEffect(() => {
-    console.log("UserInfo in ShippingScreen:", UserInfo);
+    
     if (!UserInfo) {
       navigate("/login");
     }

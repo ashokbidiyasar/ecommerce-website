@@ -10,18 +10,21 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const payment = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
 
-  // ✅ Always fetch the latest order from DB
+  // Always fetch the latest order from DB
   const order = await OrderModel.findById(orderId);
   if (!order) {
     res.status(404);
     throw new Error("Order not found");
   }
 
-  // ✅ Calculate fresh prices from DB items
-  const prices = calcPrices(order.orderItems);
+  // Guard against paying an already-paid order
+  if (order.isPaid) {
+    res.status(400);
+    throw new Error("Order is already paid");
+  }
 
-  // Stripe requires cents (integer)
-  const totalInCents = Math.round(prices.totalPrice * 100);
+  // Calculate fresh prices from DB items
+  const prices = calcPrices(order.orderItems);
 
   // ✅ Create Stripe Checkout Session
   const session = await stripe.checkout.sessions.create({
@@ -39,13 +42,15 @@ const payment = asyncHandler(async (req, res) => {
     cancel_url: `${process.env.CLIENT_URL}/orders/${orderId}?canceled=true`,
   });
 
-  // ✅ Update order with Stripe session + recalculated prices
-  order.stripeSessionId = session.id;
-  order.prices = prices;
+  // Save recalculated prices to the correct flat schema fields
+  order.itemsPrice = prices.itemsPrice;
+  order.taxPrice = prices.taxPrice;
+  order.shippingPrice = prices.shippingPrice;
+  order.totalPrice = prices.totalPrice;
   await order.save();
 
-  // ✅ Send Stripe session URL to frontend
-  res.json({ url: session.url });
+  // Send Stripe session URL + real session ID to frontend
+  res.json({ url: session.url, sessionId: session.id });
 });
 
 export default payment;

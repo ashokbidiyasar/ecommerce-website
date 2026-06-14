@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
@@ -93,13 +92,13 @@ const ProductEditScreen = () => {
         {isLoading ? (
           <Loader />
         ) : error ? (
-          <Message variant='danger'>{error.data.message}</Message>
+          <Message variant='danger'>{error?.data?.message || error?.error}</Message>
         ) : (
           <Form onSubmit={submitHandler}>
             <Form.Group controlId='name'>
               <Form.Label>Name</Form.Label>
               <Form.Control
-                type='name'
+                type='text'
                 placeholder='Enter name'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -112,7 +111,7 @@ const ProductEditScreen = () => {
                 type='number'
                 placeholder='Enter price'
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => setPrice(Number(e.target.value))}
               ></Form.Control>
             </Form.Group>
 
@@ -148,7 +147,7 @@ const ProductEditScreen = () => {
                 type='number'
                 placeholder='Enter countInStock'
                 value={countInStock}
-                onChange={(e) => setCountInStock(e.target.value)}
+                onChange={(e) => setCountInStock(Number(e.target.value))}
               ></Form.Control>
             </Form.Group>
 

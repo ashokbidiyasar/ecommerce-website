@@ -1,4 +1,4 @@
-import { EmptyCart } from "./cartSlice";
+
 import apiSlice from "./apiSlice";
 import { Order_URL, Stripe_URL } from "../../Base_urls/Base_urls.jsx";
 

@@ -31,11 +31,16 @@ const OrderScreen = () => {
   useEffect(() => {
     const handleStripeSuccess = async () => {
       if (isSuccess && order && !order.isPaid) {
+        // Retrieve the real Stripe session ID saved before redirect
+        const sessionId =
+          localStorage.getItem(`stripe_session_${orderId}`) ||
+          "stripe-session-unknown";
+
         try {
           await payOrder({
             orderId,
             details: {
-              id: "stripe-payment-id",
+              id: sessionId,
               status: "COMPLETED",
               update_time: new Date().toISOString(),
               email_address: order.user.email,
@@ -44,6 +49,8 @@ const OrderScreen = () => {
         } catch (err) {
           console.error("Failed to mark order as paid:", err);
         } finally {
+          // Clean up stored session ID
+          localStorage.removeItem(`stripe_session_${orderId}`);
           navigate(`/orders/${orderId}`, { replace: true });
         }
       }
@@ -68,11 +75,13 @@ const OrderScreen = () => {
 
   const handlePayment = async () => {
     try {
+      // Only send orderId — backend fetches and recalculates everything from DB
       const response = await createStripeSession({
-        orderItems: order.orderItems,
         orderId: order._id,
-        totalPrice: order.totalPrice,
       }).unwrap();
+
+      // Save real Stripe session ID before leaving the page
+      localStorage.setItem(`stripe_session_${order._id}`, response.sessionId);
 
       window.location.href = response.url;
     } catch (err) {
@@ -82,7 +91,11 @@ const OrderScreen = () => {
   };
 
   const deliverHandler = async () => {
-    await deliverOrder(orderId);
+    try {
+      await deliverOrder(orderId);
+    } catch (err) {
+      console.error("Failed to mark order as delivered:", err);
+    }
   };
 
   return (

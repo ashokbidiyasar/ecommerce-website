@@ -78,6 +78,7 @@ const router = createBrowserRouter([
         children: [
           { path: "/admin/orderlist", element: <OrderlistScreen /> },
           { path: "/admin/productlist", element: <ProductListScreen /> },
+          { path: "/admin/productlist/:pageNumber", element: <ProductListScreen /> },
           { path: "/admin/product/:id/edit", element: <ProductEditScreen /> },
           { path: "/admin/userlist", element: <UserListScreen /> },
           { path: "/admin/user/:id/edit", element: <UserEditScreen /> },

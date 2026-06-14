@@ -13,6 +13,15 @@ import UploadRoutes from "./routes/upload_routes.js";
 import cors from "cors";
 
 dotenv.config();
+
+// Validate required environment variables at startup
+const REQUIRED_ENV = ["MONGO_URI", "JWT_SECRET", "STRIPE_SECRET_KEY", "CLIENT_URL", "PORT"];
+const missingEnv = REQUIRED_ENV.filter((key) => !process.env[key]);
+if (missingEnv.length > 0) {
+  console.error(`❌ Missing required environment variables: ${missingEnv.join(", ")}`);
+  process.exit(1);
+}
+
 const app = express();
 
 // DB Connection
@@ -38,7 +47,7 @@ if (process.env.NODE_ENV === "production") {
   // Serve uploaded files
   app.use("/uploads", express.static("/var/data/uploads"));
 
-  // ✅ Serve React build from Vite (dist folder)
+  // Serve React build from Vite (dist folder)
   app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
   app.get("*", (req, res) =>
